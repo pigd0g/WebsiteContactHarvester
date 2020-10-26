@@ -8,7 +8,9 @@ var websiteContactHarvester = function () {
     var self = this;
 
     self.maxCrawlDepth = 2;
-    self.phoneNumberRegEx = /\(?\d{3}\)?[-\s\.]?\d{3}[-\s\.]?\d{4}/;
+    //self.phoneNumberRegEx = /\(?\d{3}\)?[-\s\.]?\d{3}[-\s\.]?\d{4}/;
+    // AU Phone Number
+    self.phoneNumberRegEx = /\(?(?:\+?61|0)[0-9]\)?(?:[ -]?[0-9]){7}[0-9]/g;
 
     // given the initial uri and the htmlContent from that uri
     // parse all anchor tags from the htmlContent and compile an array of unique sibling uris
@@ -85,10 +87,19 @@ var websiteContactHarvester = function () {
         var $ = cheerio.load(htmlContent);
         var bodyText = $("body").text();
 
-        var phoneMatches = self.phoneNumberRegEx.exec(bodyText);
-        if (phoneMatches) {
-            phoneMatches.forEach(function (p) {
-                infos.push({ host: url.host, uri: uri, infoType: "phone", value: p });
+        let m;
+
+        // RegEx101
+        while ((m = self.phoneNumberRegEx.exec(bodyText)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (m.index === self.phoneNumberRegEx.lastIndex) {
+                self.phoneNumberRegEx.lastIndex++;
+            }
+            
+            // The result can be accessed through the `m`-variable.
+            m.forEach((match, groupIndex) => {
+                //console.log(`Found match, group ${groupIndex}: ${match}`);
+                infos.push({ host: url.host, uri: uri, infoType: "phone", value: match })
             });
         }
 
