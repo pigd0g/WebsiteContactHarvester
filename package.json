@@ -18,6 +18,7 @@
   "homepage": "https://github.com/aaronhoffman/WebsiteContactHarvester#readme",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "lodash": "^4.17.20",
     "sync-request": "^3.0.1",
     "url-parse": "^1.1.7"
   }

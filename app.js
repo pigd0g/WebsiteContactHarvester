@@ -3,6 +3,7 @@
 var urlParse = require("url-parse");
 var websiteContactHarvester = require("./websiteContactHarvester.js");
 var wch = new websiteContactHarvester();
+var _ = require("lodash")
 
 var sites = process.argv.slice(2)
 //console.log(sites)
@@ -23,7 +24,11 @@ for (var i in sites) {
 
         pagesToParse.forEach(function(page) {
             var newInfosFromPage = wch.harvestContactInfo(page.uri, page.htmlContent);
-            newInfosFromPage.forEach(function(ni) { allContactInfoFromSite.push(ni); });
+            newInfosFromPage.forEach(function(ni) { 
+                if (!findDuplicates(ni)) {
+                    allContactInfoFromSite.push(ni); 
+                }
+            });
         });
 
     }
@@ -37,3 +42,7 @@ for (var i in sites) {
 console.log(JSON.stringify(allContactInfoFromSite))
 
 process.exit();
+
+function findDuplicates(ni) {
+    return _.find(allContactInfoFromSite, function(n) { return n.value == ni.value } )
+}
